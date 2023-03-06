@@ -18,7 +18,7 @@ module.exports = {
 
 
 			animation: {
-				'fade-in-text': 'fade 3s linear',
+				'fade-in-text': 'fade 1.5s linear',
 			},
 			  
 		},

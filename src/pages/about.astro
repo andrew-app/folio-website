@@ -1,1 +1,36 @@
-<h1>About Me</h1>
+---
+import ArrowIcon from '../components/ArrowIcon';
+import Kafka from '../assets/kafka.svg'
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Andrew-App</title>
+	</head>
+	<style>
+	@import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
+	</style>
+    <ArrowIcon/>	
+	<body class="bg-black">
+		<h1 class="rounded-lg px-3 py-3 text-white text-6xl font-medium font-oswald animate-fade-in-text flex sm:justify-center space-x-4">
+		ABOUT
+		</h1>
+
+
+		<div class="rounded-lg px-3 py-3 text-white text-2xl font-medium font-oswald animate-fade-in-text flex-col">
+		<p class="flex justify-center">FULL STACK SOFTWARE ENGINEER WORKING ON:</p>
+		<div class="flex justify-center text-center">
+		<ul class="text-white my-[25px] animate-fade-in-text">
+		<li>EVENT DRIVEN ARCHITECTURE</li>
+		<img src={Kafka} alt="Kafka" class="py-10 block m-auto"/>
+		<li>UI/UX</li>
+		<li>SCALABLE SOLUTION DESIGNS</li>
+		</ul>
+		</div>
+		</div>
+	</body>
+</html>
