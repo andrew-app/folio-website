@@ -1,6 +1,8 @@
 ---
 import ArrowIcon from '../components/ArrowIcon';
 import Kafka from '../assets/kafka.svg'
+import Mobile from '../assets/mobile.svg'
+import Solve from '../assets/solve.svg'
 ---
 
 <html lang="en">
@@ -9,7 +11,7 @@ import Kafka from '../assets/kafka.svg'
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Andrew-App</title>
+		<title>About Me</title>
 	</head>
 	<style>
 	@import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
@@ -19,16 +21,16 @@ import Kafka from '../assets/kafka.svg'
 		<h1 class="rounded-lg px-3 py-3 text-white text-6xl font-medium font-oswald animate-fade-in-text flex sm:justify-center space-x-4">
 		ABOUT
 		</h1>
-
-
 		<div class="rounded-lg px-3 py-3 text-white text-2xl font-medium font-oswald animate-fade-in-text flex-col">
-		<p class="flex justify-center">FULL STACK SOFTWARE ENGINEER WORKING ON:</p>
+		<p class="flex justify-center">I am a full stack software engineer from Melbourne, AU. Currently I am working on:</p>
 		<div class="flex justify-center text-center">
 		<ul class="text-white my-[25px] animate-fade-in-text">
 		<li>EVENT DRIVEN ARCHITECTURE</li>
 		<img src={Kafka} alt="Kafka" class="py-10 block m-auto"/>
-		<li>UI/UX</li>
-		<li>SCALABLE SOLUTION DESIGNS</li>
+		<li>MOBILE DEVELOPMENT</li>
+		<img src={Mobile} alt="Mobile" class="py-10 block m-auto"/>
+		<li>SOLVING BUSINESS PROBLEMS</li>
+		<img src={Solve} alt="Solve" class="py-10 block m-auto"/>
 		</ul>
 		</div>
 		</div>
