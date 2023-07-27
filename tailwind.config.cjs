@@ -5,7 +5,8 @@ module.exports = {
 	theme: {
 		extend: {
 			fontFamily: {
-				oswald: ["Oswald"]
+				oswald: ["Oswald"],
+				futura: ["Futura"]
 			},
 
 			keyframes: ({
