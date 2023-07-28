@@ -6,7 +6,8 @@ module.exports = {
 		extend: {
 			fontFamily: {
 				oswald: ["Oswald"],
-				futura: ["Futura"]
+				futura: ["Futura"],
+				gotham: ["Gotham"],
 			},
 
 			keyframes: ({
