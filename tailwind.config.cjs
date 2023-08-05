@@ -17,10 +17,8 @@ module.exports = {
 					'100%': { color: 'rgba(255,255,255,1)' },
 				},
 			}),
-
-
 			animation: {
-				'fade-in-text': 'fade 1.5s linear',
+				'fade-in-text': 'fade 2s linear',
 			},
 			  
 		},
