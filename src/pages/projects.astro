@@ -1,5 +1,7 @@
 ---
 import ArrowIcon from '../components/ArrowIcon';
+import GithubIcon from '../components/GithubIcon';
+import LinkIcon from '../components/LinkIcon';
 ---
 
 <html lang="en">
@@ -18,12 +20,37 @@ import ArrowIcon from '../components/ArrowIcon';
 		<h1 class="rounded-lg px-3 py-3 text-white text-6xl font-gotham animate-fade-in-text flex sm:justify-center space-x-4 tracking-wider">
 		PROJECTS
 		</h1>
-		<div class="rounded-lg px-3 py-3 text-white text-2xl font-medium font-futura animate-fade-in-text flex-col">
-		<p class="flex justify-center">What I have worked on in past and present.</p>
+		<div class="rounded-lg px-3 py-3 text-white text-2xl font-medium font-futura flex-col">
+		<h2 class="flex justify-center animate-fade-in-text">What I have worked on in past and present.</h2>
 		<div class="flex justify-center text-center">
-		<ul class="text-white my-[25px] animate-fade-in-text">
-		
-		</ul>
+		<div class="text-white my-[25px]">
+			<div class="flex gap-3 border-slate-50 border-2 rounded-md px-2 pt-5">
+				<img src="/src/assets/rt-dboard.png" class="h-52">
+				<div>
+				<h3 class="">Realtime Admin Dashboard</h3>
+				<p class="text-sm">An admin dashboard that simulates user creation and updation.</p>
+				<p class="text-sm text-left py-1">Built with:</p>
+				<div class="flex flex-row justify-between items-end">
+				<ul class="text-sm text-left list-inside list-disc">
+					<li>React Typescript</li>
+					<li>Kotlin Spring Web MVC</li>
+					<li>Postgres</li>
+					<li>Kafka</li>
+					<li>Kotlin Spring Webflux</li>
+					<li>Debezium</li>
+				</ul>
+				</div>
+				<span class="flex justify-end gap-5">
+					<a href={"/projects/admin-dashboard"} target="_blank">
+						<LinkIcon/>
+					</a>
+					<a href={"https://github.com/andrew-app/rt-admin-dashboard"} target="_blank">
+						<GithubIcon/>
+					</a>
+				</span>
+			</div>
+			</div>
+		</div>
 		</div>
 		</div>
 	</body>
