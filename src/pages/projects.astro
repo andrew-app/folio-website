@@ -2,6 +2,8 @@
 import ArrowIcon from '../components/ArrowIcon';
 import GithubIcon from '../components/GithubIcon';
 import LinkIcon from '../components/LinkIcon';
+import RtDboard from '../assets/rt-dboard.png';
+import LoversLeap from '../assets/lovers-leap.png';
 ---
 
 <html lang="en">
@@ -17,41 +19,65 @@ import LinkIcon from '../components/LinkIcon';
 	</style>
     <ArrowIcon/>	
 	<body class="bg-black">
-		<h1 class="rounded-lg px-3 py-3 text-white text-6xl font-gotham animate-fade-in-text flex sm:justify-center space-x-4 tracking-wider">
+		<h1 class="rounded-lg px-3 py-3 text-white text-6xl font-gotham animate-fade-in-text flex justify-center space-x-4 tracking-wider">
 		PROJECTS
 		</h1>
 		<div class="rounded-lg px-3 py-3 text-white text-2xl font-medium font-futura flex-col">
-		<h2 class="flex justify-center animate-fade-in-text">What I have worked on in past and present.</h2>
-		<div class="flex justify-center text-center">
-		<div class="text-white my-[25px]">
-			<div class="flex gap-3 border-slate-50 border-2 rounded-md px-2 pt-5">
-				<img src="/src/assets/rt-dboard.png" class="h-52">
+		<h2 class="animate-fade-in-text text-center">What I have worked on in past and present.</h2>
+		<div class="flex justify-center">
+		<div class="text-white my-[25px] flex flex-col gap-12">
+			<div class="flex items-center gap-3 border-slate-50 border-2 rounded-md py-5 px-5">
+				<img src={RtDboard} class="h-40 w-28 md:h-42 lg:h-42 md:w-48 lg:w-52">
 				<div>
-				<h3 class="">Realtime Admin Dashboard</h3>
-				<p class="text-sm">An admin dashboard that simulates user creation and updation.</p>
-				<p class="text-sm text-left py-1">Built with:</p>
-				<div class="flex flex-row justify-between items-end">
-				<ul class="text-sm text-left list-inside list-disc">
-					<li>React Typescript</li>
-					<li>Kotlin Spring Web MVC</li>
-					<li>Postgres</li>
-					<li>Kafka</li>
-					<li>Kotlin Spring Webflux</li>
-					<li>Debezium</li>
-				</ul>
+					<h3>Realtime Admin Dashboard</h3>
+					<p class="text-sm">An admin dashboard that simulates user creation and updation events.</p>
+					<p class="text-sm text-left py-1">Built with:</p>
+					<div class="flex flex-row justify-between items-end">
+					<ul class="text-sm text-left list-inside list-disc">
+						<li>React Typescript</li>
+						<li>Kotlin Spring Web MVC & Webflux</li>
+						<li>Postgres</li>
+						<li>Kafka</li>
+						<li>Debezium</li>
+					</ul>
+					</div>
 				</div>
-				<span class="flex justify-end gap-5">
-					<a href={"/projects/admin-dashboard"} target="_blank">
-						<LinkIcon/>
-					</a>
+				<span class="mx-3"></span>
+				<span class="flex items-end gap-5">
 					<a href={"https://github.com/andrew-app/rt-admin-dashboard"} target="_blank">
 						<GithubIcon/>
 					</a>
+					<a href={"/projects/admin-dashboard"} target="_blank">
+						<LinkIcon/>
+					</a>
 				</span>
 			</div>
+
+			<div class="flex items-center gap-3 border-slate-50 border-2 rounded-md py-7 px-5">
+				<img src={LoversLeap} class="h-44 w-28 md:h-42 lg:h-42 md:w-48 lg:w-52">
+				<div>
+					<h3>Lover's Leap Booking Portal</h3>
+					<p class="text-sm">Booking platform for holiday home in Nuwara Eliya, Sri-Lanka. (In-Progress)</p>
+					<p class="text-sm text-left py-1">Built with:</p>
+					<div class="flex flex-row justify-between items-end">
+					<ul class="text-sm text-left list-inside list-disc">
+						<li>Next.js Typescript</li>
+						<li>Supabase</li>
+						<li>Prisma ORM</li>
+						<li>Stripe Payments</li>
+						<li>Vercel</li>
+					</ul>
+					</div>
+					
+				</div>
+				<span class="flex items-end ml-11">
+					<a href={"https://lovers-leap.vercel.app/"} target="_blank">
+						<LinkIcon/>
+					</a>
+				</span>
 			</div>
 		</div>
-		</div>
+			
 		</div>
 	</body>
 </html>

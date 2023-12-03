@@ -2,7 +2,7 @@ import type { Component } from 'solid-js';
 
 const NavBar: Component = () => {
     return (
-        <nav class="flex sm:justify-center">
+        <nav class="flex justify-center flex-col">
             {[
             ['ABOUT', '/about'],
             ['SOCIALS', '/socials'],
