@@ -1,0 +1,10 @@
+---
+import Prose from '../../components/Prose.astro';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('blogs', 'wasm-lambda');
+const { Content } = await entry.render();
+---
+<Prose>
+    <Content />
+</Prose>
