@@ -2,6 +2,7 @@
 import ArrowIcon from '../components/ArrowIcon';
 import GithubIcon from '../components/GithubIcon';
 import LinkIcon from '../components/LinkIcon';
+import { Image } from 'astro:assets';
 import Admin from '../assets/admin.svg';
 import LoversLeap from '../assets/lovers-leap.svg';
 ---
@@ -24,8 +25,8 @@ import LoversLeap from '../assets/lovers-leap.svg';
 		src: url('../assets/fonts/Gotham.ttf');
 		}
 	</style>
-    <ArrowIcon/>	
 	<body class="bg-black">
+		<ArrowIcon/>
 		<h1 class="rounded-lg px-3 py-3 text-white text-6xl font-gotham animate-fade-in-text flex justify-center space-x-4 tracking-wider">
 		PROJECTS
 		</h1>
@@ -34,7 +35,7 @@ import LoversLeap from '../assets/lovers-leap.svg';
 		<div class="flex justify-center">
 		<div class="text-white my-[25px] flex flex-col gap-12">
 			<div class="flex items-center gap-3 border-slate-50 border-2 rounded-md py-5 px-5">
-				<img src={Admin} class="h-40 w-28 md:h-42 lg:h-42 md:w-48 lg:w-52">
+				<Image src={Admin} alt="admin logo" class="h-40 w-28 md:h-42 lg:h-42 md:w-48 lg:w-52"/>
 				<div>
 					<h3 class="font-bold">Realtime Admin Dashboard</h3>
 					<p class="text-sm">An admin dashboard that simulates user creation and updation events.</p>
@@ -61,7 +62,7 @@ import LoversLeap from '../assets/lovers-leap.svg';
 			</div>
 
 			<div class="flex items-center gap-3 border-slate-50 border-2 rounded-md py-7 px-5">
-				<img src={LoversLeap} class="h-44 w-28 md:h-42 lg:h-42 md:w-48 lg:w-52">
+				<Image src={LoversLeap} alt="lovers leap logo" class="h-44 w-28 md:h-42 lg:h-42 md:w-48 lg:w-52"/>
 				<div>
 					<h3 class="font-bold">Lover's Leap Booking Portal</h3>
 					<p class="text-sm">Booking platform for holiday home in Nuwara Eliya, Sri-Lanka. (In-Progress)</p>
@@ -75,7 +76,6 @@ import LoversLeap from '../assets/lovers-leap.svg';
 						<li>Vercel</li>
 					</ul>
 					</div>
-					
 				</div>
 				<span class="flex items-end ml-11">
 					<a href={"https://lovers-leap.vercel.app/"} target="_blank">

@@ -12,10 +12,20 @@ const blogs = await getCollection('blogs');
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Blog</title>
+		<title>Blogs</title>
 	</head>
-    <ArrowIcon/>	
+	<style>
+		@font-face {
+		font-family: "Futura";
+		src: url('../assets/fonts/Futura.ttf');
+		}
+		@font-face {
+		font-family: "Gotham";
+		src: url('../assets/fonts/Gotham.ttf');
+		}
+	</style>
 	<body class="bg-black">
+		<ArrowIcon/>
 		<h1 class="rounded-lg px-3 py-3 text-white text-6xl font-gotham animate-fade-in-text flex sm:justify-center space-x-4 tracking-wider">
 		BLOGS
 		</h1>

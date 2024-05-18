@@ -1,7 +1,19 @@
 ---
+import ArrowIcon from './ArrowIcon';
 ---
-<body class="bg-black mx-12 my-12">
-<div class="text-white prose-headings:text-white prose-headings:font-bold prose-headings:text-center">
+<style>
+  @font-face {
+  font-family: "Futura";
+  src: url('../assets/fonts/Futura.ttf');
+  }
+  @font-face {
+  font-family: "Gotham";
+  src: url('../assets/fonts/Gotham.ttf');
+  }
+</style>
+<body class="bg-black">
+  <ArrowIcon/>
+<div class="text-white text-2xl font-futura mx-10 prose-headings:text-white prose-h1:font-gotham prose-h1:text-center prose-headings:text-3xl prose-h3:pb-5">
   <slot />
 </div>
 </body>

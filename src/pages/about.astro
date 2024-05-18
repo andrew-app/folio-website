@@ -3,6 +3,7 @@ import ArrowIcon from '../components/ArrowIcon';
 import Kafka from '../assets/kafka.svg'
 import Mobile from '../assets/mobile.svg'
 import Frontend from '../assets/frontend.svg'
+import { Image } from 'astro:assets';
 ---
 
 <html lang="en">
@@ -23,8 +24,9 @@ import Frontend from '../assets/frontend.svg'
 		src: url('../assets/fonts/Gotham.ttf');
 		}
 	</style>
-    <ArrowIcon/>	
+    	
 	<body class="bg-black">
+		<ArrowIcon/>
 		<h1 class="px-3 py-3 text-white text-6xl font-gotham animate-fade-in-text flex justify-center space-x-4">
 		ABOUT
 		</h1>
@@ -45,11 +47,11 @@ import Frontend from '../assets/frontend.svg'
 		<div class="flex justify-center text-center">
 		<ul class="text-white my-[5px] animate-fade-in-text">
 		<li>EVENT DRIVEN ARCHITECTURE</li>
-		<img src={Kafka} alt="Kafka logo" class="py-10 block m-auto"/>
+		<Image src={Kafka} alt="Kafka logo" class="py-10 block m-auto"/>
 		<li>MOBILE DEVELOPMENT</li>
-		<img src={Mobile} alt="Mobile clipart" class="py-10 block m-auto"/>
+		<Image src={Mobile} alt="Mobile clipart" class="py-10 block m-auto"/>
 		<li>FRONTEND DEVELOPMENT</li>
-		<img src={Frontend} alt="webdev clipart" class="py-10 block m-auto pl-7"/>
+		<Image src={Frontend} alt="webdev clipart" class="py-10 block m-auto pl-7"/>
 		</ul>
 		</div>
 		</div>
