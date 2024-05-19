@@ -1,0 +1,19 @@
+---
+import Prose from '../../components/Prose.astro';
+import { getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+
+
+const entry = await getEntry('blogs', 'wasm-lambda');
+const { Content } = await entry.render();
+
+export async function getStaticPaths() {
+    const blogs = await getCollection('blogs');
+    return blogs.map(entry => ({
+    params: { slug: entry.slug }, props: { entry },
+  }));
+}
+---
+<Prose>
+    <Content/>
+</Prose>

@@ -34,7 +34,7 @@ const blogs = await getCollection('blogs');
 				{
 					blogs.map((blog) => (
 						<div class="flex flex-col gap-1">
-							<a href={`blogs/${blog.slug}`}>
+							<a href={`/blogs/${blog.slug}`}>
 							<h3 class="text-2xl hover:text-yellow-200">{blog.data.title}</h2>
 							</a>
 							<p class="text-sm">{new Date(blog.data.date).toLocaleDateString()}</p>

@@ -1,15 +1,17 @@
 ---
-title: 'Rust WASM for AWS Lambda@Edge functions'
+title: 'Rust WebAssembly for AWS Lambda@Edge functions'
 author: 'Andrew Appuhamy'
 date: 2024-05-15
 ---
 
-# Rust WASM for Lambda@Edge functions
+import WasmIcon  from '../../components/WasmIcon.astro'
+
+# Rust <WasmIcon/> for Lambda@Edge functions
 
 ### Introduction
 
 They say <a href="https://www.youtube.com/watch?v=tKbV6BpH-C8" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*premature optimisation is the root of all evil*</a>. 
-Well we're going throw that belief out the window today as we explore optimising serverless edge functions with web assembly.
+Well we're going throw that belief out the window today as we explore optimising serverless edge functions with <a href="https://webassembly.org/" target="_blank"><WasmIcon/></a>.
 
 ### Hybrid
 
@@ -18,6 +20,8 @@ Well we're going throw that belief out the window today as we explore optimising
     <strong>The "Hybrid" Lambda</strong>
 </summary>
 ```javascript
+import { verify } from 'rust-edge-lambda';
+
 export const handler = async (event, _context, callback) => {
     let authToken = '';
     const request = event.Records[0].cf.request;
@@ -58,7 +62,7 @@ export const handler = async (event, _context, callback) => {
 
 <details>
 <summary>
-    <strong>The Rust WASM Module</strong>
+    <strong>The Rust <WasmIcon/> Module</strong>
 </summary>
 ```rust
 #[derive(Debug)]
