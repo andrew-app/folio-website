@@ -8,4 +8,97 @@ date: 2024-05-15
 
 ### Introduction
 
-They say [*premature optimisation is the root of all evil*](https://www.youtube.com/watch?v=tKbV6BpH-C8). Well we're going throw that belief out the window today as we explore optimising serverless edge functions with web assembly.
+They say <a href="https://www.youtube.com/watch?v=tKbV6BpH-C8" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*premature optimisation is the root of all evil*</a>. 
+Well we're going throw that belief out the window today as we explore optimising serverless edge functions with web assembly.
+
+### Hybrid
+
+<details>
+<summary>
+    <strong>The "Hybrid" Lambda</strong>
+</summary>
+```javascript
+export const handler = async (event, _context, callback) => {
+    let authToken = '';
+    const request = event.Records[0].cf.request;
+
+    if (request.headers['authorization'])
+        authToken = request.headers['authorization'][0].value.replace("Bearer ", "")
+
+    try {
+        const verifyTokenResponse = verify(authToken);
+        switch (verifyTokenResponse) {
+            case '401':
+                response.status = '401';
+                response.statusDescription = 'Unauthorized';
+                response.body = JSON.stringify({ error: 'Invalid token' });
+                break;
+            case '403':
+                response.status = '403';
+                response.statusDescription = 'Forbidden';
+                break;
+            case '200':
+                callback(null, request);
+            default:
+                break;
+        }
+    }
+
+    catch(error) {
+        console.error(error);
+        response.status = '401';
+        response.statusDescription = 'Unauthorized';
+        response.body = JSON.stringify({ error: 'Invalid token' });
+    }
+
+    callback(null, response);
+}
+```
+</details>
+
+<details>
+<summary>
+    <strong>The Rust WASM Module</strong>
+</summary>
+```rust
+#[derive(Debug)]
+pub enum Status {
+    Ok,
+    Unauthorized,
+    Forbidden,
+}
+
+impl fmt::Display for Status {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Status::Ok => write!(f, "200"),
+            Status::Unauthorized => write!(f, "401"),
+            Status::Forbidden => write!(f, "403"),
+        }
+    }
+}
+
+const JWT_SECRET: &'static str = env!("JWT_SECRET");
+
+#[wasm_bindgen]
+pub fn verify(token: &str) -> String {
+    
+    let decoded_token = decode::<Claims>(&token, &DecodingKey::from_secret(JWT_SECRET.as_ref()), &Validation::new(Algorithm::HS256));
+    let valid_permissions = vec!["view:data"];
+    match decoded_token {
+        Ok(token_data) => {
+            console_log!("{:?}", token_data.claims);
+            if token_data.claims.permissions.iter().all(|permission| valid_permissions.contains(&permission.as_str())) {
+                return Status::Ok.to_string();
+            } else {
+                return Status::Forbidden.to_string();
+            }
+        },
+        Err(e) => {
+            console_log!("{}",e);
+            return Status::Unauthorized.to_string();
+        }
+    }
+}
+```
+</details>

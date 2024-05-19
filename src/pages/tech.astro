@@ -4,7 +4,6 @@ import ReactLogo from '../assets/react.svg';
 import SpringLogo from '../assets/spring.svg';
 import NextLogo from '../assets/next-js.svg';
 import KotlinLogo from '../assets/kotlin.svg';
-import { Image } from 'astro:assets';
 ---
 
 <html lang="en">
@@ -34,12 +33,12 @@ import { Image } from 'astro:assets';
 		<p class="flex justify-center">Tools and technologies I have used.</p>
 		<div class="flex items-center text-center flex-col">
 			<div class="flex flex-row">
-				<Image src={ReactLogo} alt="React Logo"/>
-				<Image src={NextLogo} alt="Next Logo"/>
+				<img src={ReactLogo.src} alt="React Logo"/>
+				<img src={NextLogo.src} alt="Next Logo"/>
 			</div>
 			<div class="flex flex-row">
-				<Image src={SpringLogo} alt="Spring Logo"/>
-				<Image src={KotlinLogo} alt="Kotlin Logo"/>
+				<img src={SpringLogo.src} alt="Spring Logo"/>
+				<img src={KotlinLogo.src} alt="Kotlin Logo"/>
 			</div>
 		</div>
 		</div>
