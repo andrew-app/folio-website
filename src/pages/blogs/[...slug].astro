@@ -2,6 +2,7 @@
 import Prose from '../../components/Prose.astro';
 import { getEntry } from 'astro:content';
 import { getCollection } from 'astro:content';
+import ArrowIcon from '../../components/ArrowIcon';
 
 
 const entry = await getEntry('blogs', 'wasm-lambda');
@@ -14,6 +15,11 @@ export async function getStaticPaths() {
   }));
 }
 ---
+<head>
+  <title>Blog - {entry.data.title}</title>
+  <meta charset="UTF-8" />
+</head>
+<ArrowIcon route="/blogs"/>
 <Prose>
     <Content/>
 </Prose>
