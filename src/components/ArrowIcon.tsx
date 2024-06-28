@@ -1,7 +1,4 @@
-type ArrowIconProps = {
-    route?: string
-}
-const ArrowIcon = ({route}: ArrowIconProps) => {
+const ArrowIcon = ({route}: {route?: string}) => {
     return(
         <button>
             <a href={route ?? "/"}>

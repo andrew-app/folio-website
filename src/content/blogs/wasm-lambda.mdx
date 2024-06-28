@@ -3,68 +3,34 @@ title: 'Rust WebAssembly for AWS Lambda@Edge functions'
 author: 'Andrew Appuhamy'
 date: 2024-05-15
 ---
-
+import Accordion from '../../scripts/WasmLambdaAccordions.astro'
 import WasmIcon  from '../../components/WasmIcon.astro'
 
-# Rust <WasmIcon/> for Lambda@Edge functions
+# <WasmIcon/> for Lambda@Edge functions
 
 ### Introduction
 
 They say <a href="https://www.youtube.com/watch?v=tKbV6BpH-C8" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*premature optimisation is the root of all evil*</a>. 
-Well we're going throw that belief out the window today as we explore optimising serverless edge functions with <a href="https://webassembly.org/" target="_blank"><WasmIcon/></a>.
+Well we're going throw that belief out the window today as we explore building serverless edge functions with <a href="https://webassembly.org/" target="_blank"><WasmIcon/></a> and assess if there is any perofrmance benefit over using Javascript.
+
+### The Motivation
+**Why are we doing this? What are we going to build?**
+
+### About Lambda@Edge?
+
+### About Rust Wasm-pack, WASM Bindgen and WASM in general
+
+### The Plan
 
 ### Hybrid
 
 Initial usage of the <WasmIcon/> module included some Javascript defined logic in particular the response when verifying the JWT and getting said JWT from the request header.
-<details>
-<summary>
-    <strong>The "Hybrid" Lambda</strong>
-</summary>
-```javascript
-import { verify } from 'rust-edge-lambda';
 
-export const handler = async (event, _context, callback) => {
-    let authToken = '';
-    const request = event.Records[0].cf.request;
-
-    if (request.headers['authorization'])
-        authToken = request.headers['authorization'][0].value.replace("Bearer ", "")
-
-    try {
-        const verifyTokenResponse = verify(authToken);
-        switch (verifyTokenResponse) {
-            case '401':
-                response.status = '401';
-                response.statusDescription = 'Unauthorized';
-                response.body = JSON.stringify({ error: 'Invalid token' });
-                break;
-            case '403':
-                response.status = '403';
-                response.statusDescription = 'Forbidden';
-                break;
-            case '200':
-                callback(null, request);
-            default:
-                break;
-        }
-    }
-
-    catch(error) {
-        console.error(error);
-        response.status = '401';
-        response.statusDescription = 'Unauthorized';
-        response.body = JSON.stringify({ error: 'Invalid token' });
-    }
-
-    callback(null, response);
-}
-```
-</details>
-
-<details>
-<summary>
-    <strong>The Rust <WasmIcon/> Module</strong>
-</summary>
+<details id="wasm-hybrid-lambda">
+    <summary>
+        <strong>The Rust <WasmIcon/> Module for "Hybrid" Lambda</strong>
+    </summary>
+<div id="wasm-hybrid-lambda-code">
 ```rust
 #[derive(Debug)]
 pub enum Status {
@@ -106,4 +72,52 @@ pub fn verify(token: &str) -> String {
     }
 }
 ```
+</div>
+</details>
+
+<details id="js-hybrid-lambda">
+<summary>
+    <strong>The "Hybrid" Lambda</strong>
+</summary>
+<div id="js-hybrid-lambda-code">
+```javascript
+import { verify } from 'rust-edge-lambda';
+
+export const handler = async (event, _context, callback) => {
+    let authToken = '';
+    const request = event.Records[0].cf.request;
+
+    if (request.headers['authorization'])
+        authToken = request.headers['authorization'][0].value.replace("Bearer ", "")
+
+    try {
+        const verifyTokenResponse = verify(authToken);
+        switch (verifyTokenResponse) {
+            case '401':
+                response.status = '401';
+                response.statusDescription = 'Unauthorized';
+                response.body = JSON.stringify({ error: 'Invalid token' });
+                break;
+            case '403':
+                response.status = '403';
+                response.statusDescription = 'Forbidden';
+                break;
+            case '200':
+                callback(null, request);
+            default:
+                break;
+        }
+    }
+
+    catch(error) {
+        console.error(error);
+        response.status = '401';
+        response.statusDescription = 'Unauthorized';
+        response.body = JSON.stringify({ error: 'Invalid token' });
+    }
+
+    callback(null, response);
+}
+```
+</div>
 </details>
