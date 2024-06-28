@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: lts/*
       - name: Install dependencies
-        run: pnpm install
+        run: npm i -g pnpm && pnpm install
         working-directory: UI
       - name: Build project
         run: pnpm run build
@@ -33,6 +33,7 @@ jobs:
 
   build_and_deploy:
     runs-on: ubuntu-latest
+    needs: build_admin_project
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -41,7 +42,7 @@ jobs:
         with:
           node-version: lts/*
       - name: Install dependencies
-        run: pnpm install
+        run: npm i -g pnpm && pnpm install
       - name: Build portfolio website
         run: |
           pnpm run build
