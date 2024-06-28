@@ -1,7 +1,7 @@
 {
-    "hosting": {
-      "site": "andrew-app",
-      "public": "dist",
-      "ignore": []
-    }
+  "hosting": {
+    "site": "andrew-app",
+    "public": "dist",
+    "ignore": []
+  }
 }

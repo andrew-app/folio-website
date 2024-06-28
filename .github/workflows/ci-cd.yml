@@ -1,0 +1,59 @@
+name: Deploy portfolio website to firebase
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_admin_project:
+    runs-on: ubuntu-latest
+    name: Build admin dashboard UI project
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: andrew-app/rt-admin-dashboard
+          sparse-checkout: 'UI'
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: UI
+      - name: Build project
+        run: pnpm run build
+        working-directory: UI
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-dashboard-ui
+          path: UI/dist
+
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build portfolio website
+        run: |
+          pnpm run build
+          rm dist/projects/admin-dashboard/index.html
+      - name: Download admin dashboard ui artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: admin-dashboard-ui
+          path: dist/projects/admin-dashboard
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIO_E0C32 }}'
+          channelId: live
+          projectId: portfolio-e0c32
