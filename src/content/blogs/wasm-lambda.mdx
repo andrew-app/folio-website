@@ -1,28 +1,50 @@
 ---
-title: 'Rust WebAssembly for AWS Lambda@Edge functions'
+title: 'WebAssembly for AWS Lambda@Edge functions'
 author: 'Andrew Appuhamy'
 date: 2024-05-15
 ---
 import Accordion from '../../scripts/WasmLambdaAccordions.astro'
 import WasmIcon  from '../../components/WasmIcon.astro'
 
-# <WasmIcon/> for Lambda@Edge functions
+# <WasmIcon/> for AWS Lambda@Edge functions
 
-### Introduction
+### **Introduction**
 
 They say <a href="https://www.youtube.com/watch?v=tKbV6BpH-C8" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*premature optimisation is the root of all evil*</a>. 
-Well we're going throw that belief out the window today as we explore building serverless edge functions with <a href="https://webassembly.org/" target="_blank"><WasmIcon/></a> and assess if there is any perofrmance benefit over using Javascript.
+Well we're going throw that belief out the window today. As we explore building serverless edge functions with <a href="https://webassembly.org/" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*WebAssembly (WASM)*</a> and assess if there is any performance advantage over using Javascript.
 
-### The Motivation
-**Why are we doing this? What are we going to build?**
+### **The Motivation**
+I think it is important to first outline the problem we are trying to solve with Lambda@Edge and the accompanying AWS infrastructure.
+The problem is related to the authentication of users through [Auth0](https://auth0.com/) identity provider (IdP). Auth0 has a feature called <a href="https://auth0.com/docs/customize/actions/actions-overview" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*actions*</a> which I like to describe as type of post-login middleware. 
+Essentially it is a flow that excecutes a sets of scripts before a user is issued an access token. Actions aren't limited to manipulating just user authentication they can also be used for M2M (Machine to Machine) authentication and various other flows.
+For user authentication specifically, with actions, we can do things among many other processes like:
+<br/>
+<ul class="list-inside list-disc">
+    <li>Enrich the token with additional claims.</li>
+    <li>Check if the user is allowed to access the application from their IP address. </li>
+    <li>Enforce or disable multi-factor authentication (MFA) for specific users.</li>
+</ul>
+<br/>
+Predating actions Auth0 offered <a href="https://auth0.com/docs/customize/rules/create-rules" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*rules*</a> which uses an older Nodejs runtime version and is limited to user authentication flow.
 
-### About Lambda@Edge?
+One feature that is missing from actions which was present in rules was the existence of a datastore. In rules we could store data in a global object and access it in subsequent rules.
+<br/>
+This is ultimately the problem that needs to be solved. Creation of a datastore that only Auth0 actions should be able to read from.
+<br/>
+[Cloudfront](https://aws.amazon.com/cloudfront/) which is AWS's content delivery network (CDN) offering has a feature called edge functions
+which allows to run code as close to the user and manipulate the request and response without having to worry about servers and the other accompanying infrastructure
+<a href="https://auth0.com/docs/customize/rules/create-rules" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*Lambda@Edge*</a> is one of the two ways to write and manage edge functions.\
+<br/>
+With the use of Lambda@Edge, CLoudfront with its caching ability and S3 whcih will hold our data in the form of JSON files we can be confident that when auth0 actions has to access the datastore it will be pretty quick to not adversely affect the user experience when logging in. 
+### **About Lambda@Edge**
+AWS Lambda@Edge functions are used to run code in response to CloudFront events. These events include viewer requests, origin requests, viewer responses, and origin responses. The functions are executed in AWS locations closer to the end user, which can reduce latency and improve performance.
+### **About Rust wasm-pack, WASM Bindgen and WASM in general**
 
-### About Rust Wasm-pack, WASM Bindgen and WASM in general
+### **The Plan**
 
-### The Plan
+### **Pure Javascript Approach**
 
-### Hybrid
+### **Hybrid Approach**
 
 Initial usage of the <WasmIcon/> module included some Javascript defined logic in particular the response when verifying the JWT and getting said JWT from the request header.
 
@@ -121,3 +143,9 @@ export const handler = async (event, _context, callback) => {
 ```
 </div>
 </details>
+
+### **Pure Rust Approach**
+
+### **Performance Comparison**
+
+### **Conclusion**
