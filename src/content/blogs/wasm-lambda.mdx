@@ -33,7 +33,7 @@ This is ultimately the problem that needs to be solved. Creation of a datastore 
 <br/>
 [Cloudfront](https://aws.amazon.com/cloudfront/) which is AWS's content delivery network (CDN) offering has a feature called edge functions
 which allows to run code as close to the user and manipulate the request and response without having to worry about servers and the other accompanying infrastructure
-<a href="https://auth0.com/docs/customize/rules/create-rules" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*Lambda@Edge*</a> is one of the two ways to write and manage edge functions.\
+<a href="https://auth0.com/docs/customize/rules/create-rules" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*Lambda@Edge*</a> is one of the two ways to write and manage edge functions.
 <br/>
 With the use of Lambda@Edge, CLoudfront with its caching ability and S3 whcih will hold our data in the form of JSON files we can be confident that when auth0 actions has to access the datastore it will be pretty quick to not adversely affect the user experience when logging in. 
 ### **About Lambda@Edge**
