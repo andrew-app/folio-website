@@ -6,15 +6,16 @@ date: 2024-05-15
 import Accordion from '../../scripts/WasmLambdaAccordions.astro'
 import WasmIcon  from '../../components/WasmIcon.astro'
 import Auth0ActionsDatastore from '../../diagrams/auth0-actions-datastore.astro'
+import LinkIcon from '../../components/LinkIcon'
 
 # <WasmIcon/> for AWS Lambda@Edge functions
 
-### **Introduction**
+### <span id="introduction" class="group flex gap-2 "> **Introduction** <a href="#introduction"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
 They say <a href="https://www.youtube.com/watch?v=tKbV6BpH-C8" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*premature optimisation is the root of all evil*</a>. 
 Well we're going throw that belief out the window today. As we explore building serverless edge functions with <a href="https://webassembly.org/" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*WebAssembly (WASM)*</a> and assess if there is any performance advantage over using Javascript.
 
-### **The Motivation**
+### <span id="the-motivation" class="group flex gap-2 "> **The Motivation**  <a href="#the-motivation"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 I think it is important to outline the problem we are trying to solve with Lambda@Edge and the accompanying AWS infrastructure.
 The problem is related to the authentication of users through [Auth0](https://auth0.com/) identity provider (IdP). Auth0 has a feature called <a href="https://auth0.com/docs/customize/actions/actions-overview" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*actions*</a> which I like to describe as type of post-login middleware. 
 Essentially it is a flow that excecutes a sets of scripts before a user is issued an access token. Actions aren't limited to manipulating just user authentication they can also be used for M2M (Machine to Machine) authentication and various other flows.
@@ -39,15 +40,15 @@ which allows for code to be run as close to the user and manipulate the request 
 With the use of Lambda@Edge for authorisation, Cloudfront and s3 as an origin which will hold our data in the form of JSON files. 
 We can be confident that when Auth0 actions has to access the s3 datastore through Cloudfront it will be pretty quick in order to not adversely affect the user experience when logging in.
 <Auth0ActionsDatastore/>
-### **About Lambda@Edge**
+### <span id="about-lambda@edge" class="group flex gap-2 "> **About Lambda@Edge**  <a href="#about-lambda@edge"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 AWS Lambda@Edge functions are used to run code in response to CloudFront events. These events include viewer requests, origin requests, viewer responses, and origin responses. The functions are executed in AWS locations closer to the end user, which can reduce latency and improve performance.
-### **About Rust wasm-pack, WASM Bindgen and WASM in general**
+### <span id="about-wasm" class="group flex gap-2 "> **About Rust wasm-pack, WASM Bindgen and WASM in general**  <a href="#about-wasm"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
-### **The Plan**
+### <span id="the-plan" class="group flex gap-2 "> **The Plan**  <a href="#the-plan"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
-### **Pure Javascript Approach**
+### <span id="pure-js-approach" class="group flex gap-2 "> **Pure Javascript Approach**  <a href="#pure-js-approach"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
-### **Hybrid Approach**
+### <span id="hybrid-approach" class="group flex gap-2 "> **Hybrid Approach**  <a href="#hybrid-approach"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
 Initial usage of the <WasmIcon/> module included some Javascript defined logic in particular the response when verifying the JWT and getting said JWT from the request header.
 
@@ -147,8 +148,8 @@ export const handler = async (event, _context, callback) => {
 </div>
 </details>
 
-### **Pure Rust Approach**
+### <span id="pure-rust-approach" class="group flex gap-2 "> **Pure Rust Approach**  <a href="#pure-rust-approach"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
-### **Performance Comparison**
+### <span id="perf-comparison" class="group flex gap-2 "> **Performance Comparison**  <a href="#perf-comparison"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
-### **Conclusion**
+### <span id="conclusion" class="group flex gap-2 "> **Conclusion**  <a href="#conclusion"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
