@@ -39,7 +39,9 @@ which allows for code to be run as close to the user and manipulate the request 
 <br/>
 With the use of Lambda@Edge for authorisation, Cloudfront and s3 as an origin which will hold our data in the form of JSON files. 
 We can be confident that when Auth0 actions has to access the s3 datastore through Cloudfront it will be pretty quick in order to not adversely affect the user experience when logging in.
-<Auth0ActionsDatastore/>
+<div class="max-w-full flex justify-center align-center">
+    <Auth0ActionsDatastore/>
+</div>
 ### <span id="about-lambda@edge" class="group flex gap-2 "> **About Lambda@Edge**  <a href="#about-lambda@edge"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 AWS Lambda@Edge functions are used to run code in response to CloudFront events. These events include viewer requests, origin requests, viewer responses, and origin responses. The functions are executed in AWS locations closer to the end user, which can reduce latency and improve performance.
 ### <span id="about-wasm" class="group flex gap-2 "> **About Rust wasm-pack, WASM Bindgen and WASM in general**  <a href="#about-wasm"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
