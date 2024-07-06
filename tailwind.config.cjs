@@ -5,9 +5,9 @@ module.exports = {
 	theme: {
 		extend: {
 			fontFamily: {
-				oswald: ["Oswald"],
 				futura: ["Futura"],
 				gotham: ["Gotham"],
+				virgil: ["Virgil"]
 			},
 			animation: {
 				scale: 'scale 3s forwards cubic-bezier(0.5, 1, 0.89, 1)',

@@ -4,8 +4,9 @@ author: 'Andrew Appuhamy'
 date: 2024-05-15
 ---
 import Accordion from '../../scripts/WasmLambdaAccordions.astro'
-import WasmIcon  from '../../components/WasmIcon.astro'
+import WasmIcon from '../../components/WasmIcon.astro'
 import Auth0ActionsDatastore from '../../diagrams/auth0-actions-datastore.astro'
+import CloudfrontEvents from '../../diagrams/cloudfront-events.astro'
 import LinkIcon from '../../components/LinkIcon'
 
 # <WasmIcon/> for AWS Lambda@Edge functions
@@ -43,16 +44,44 @@ We can be confident that when Auth0 actions has to access the s3 datastore throu
     <Auth0ActionsDatastore/>
 </div>
 ### <span id="about-lambda@edge" class="group flex gap-2 "> **About Lambda@Edge**  <a href="#about-lambda@edge"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
-AWS Lambda@Edge functions are used to run code in response to CloudFront events. These events include viewer requests, origin requests, viewer responses, and origin responses. The functions are executed in AWS locations closer to the end user, which can reduce latency and improve performance.
-### <span id="about-wasm" class="group flex gap-2 "> **About Rust wasm-pack, WASM Bindgen and WASM in general**  <a href="#about-wasm"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
+AWS Lambda@Edge functions are used to run code in response to CloudFront events. \
+\
+These events include:
+<ul class="list-inside list-disc py-3">
+    <li>Viewer requests - Event when Cloudfront recieves the request from the user.</li>
+    <li>Origin requests - Event when Cloudfront forwards the request to an origin eg: s3.</li>
+    <li>Viewer responses - Event when Cloudfront returns the response to the viewer.</li>
+    <li>Origin responses - Event when the Origin returns the response to Cloudfront.</li>
+</ul>
+
+<div class="max-w-full flex justify-center align-center">
+    <CloudfrontEvents/>
+</div>
+
+Lambda@Edge is able to manipulate only one of these events when setting up path behaviours in Cloudfront.
+The functions are executed in AWS locations closer to the end user which can reduce latency and improve performance. 
+This is achieved by the Lambda being automatically replicated in each AWS region. 
+Therefore AWS Lambda must be given the relevant IAM roles and permissions to allow for this.\
+\
+There are some rules/restrictions on Lambda@Edge compared to standard Lambda functions in AWS.
+
+<ul class="list-inside list-disc py-3">
+    <li>Lambda@Edge function must be deployed in US-East-1 Region.</li>
+    <li>Limited to using x86 architecture.</li>
+    <li>Lambda code for viewer events cannot exceed 1 MB in size and for origin events cannot exceed 50 MB.</li>
+    <li>Cannot have environment variables.</li>
+    <li>Only supports Node.js and Python runtimes.</li>
+</ul>
 
 ### <span id="the-plan" class="group flex gap-2 "> **The Plan**  <a href="#the-plan"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
-### <span id="pure-js-approach" class="group flex gap-2 "> **Pure Javascript Approach**  <a href="#pure-js-approach"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
+### <span id="js-approach" class="group flex gap-2 "> **Javascript Approach**  <a href="#js-approach"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
-### <span id="hybrid-approach" class="group flex gap-2 "> **Hybrid Approach**  <a href="#hybrid-approach"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
+### <span id="about-wasm" class="group flex gap-2 "> **About Rust wasm-pack, WASM Bindgen and WASM in general**  <a href="#about-wasm"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
-Initial usage of the <WasmIcon/> module included some Javascript defined logic in particular the response when verifying the JWT and getting said JWT from the request header.
+### <span id="hybrid-approach" class="group flex gap-2 "> **"Hybrid" Approach**  <a href="#hybrid-approach"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
+
+Initial usage of the WASM module included some Javascript defined logic in particular the response when verifying the JWT and getting said JWT from the request header.
 
 <details id="wasm-hybrid-lambda">
     <summary>
@@ -150,7 +179,7 @@ export const handler = async (event, _context, callback) => {
 </div>
 </details>
 
-### <span id="pure-rust-approach" class="group flex gap-2 "> **Pure Rust Approach**  <a href="#pure-rust-approach"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
+### <span id="rust-approach" class="group flex gap-2 "> **Rust Approach**  <a href="#rust-approach"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
 ### <span id="perf-comparison" class="group flex gap-2 "> **Performance Comparison**  <a href="#perf-comparison"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
