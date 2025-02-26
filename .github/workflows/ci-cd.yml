@@ -60,4 +60,4 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIO_E0C32 }}'
           channelId: live
           projectId: portfolio-e0c32
-          firebaseToolsVersion: 13.31.0
+          firebaseToolsVersion: 13.9.0
