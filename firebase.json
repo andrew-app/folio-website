@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "andrew-app",
+    "site": "andrew-app-dev",
     "public": "dist",
     "ignore": []
   }
