@@ -16,12 +16,13 @@
     const summaryButton = document.getElementById('summariser-btn');
     try {
         // @ts-ignore
-        if (Summarizer) return;
+        if (Summarizer) {
+            console.log('Summarizer API is available');
+        }
     }
     catch (error) {
         console.error('Summarizer is not available:', error);
         summaryButton?.remove();
-        return;
     }
     
     const options = {
@@ -47,8 +48,6 @@
             return;
         }
         if (availability === 'available') {
-            // The Summarizer API can be used immediately .
-            console.log('Summarizer API is available');
             //@ts-ignore
             summarizer = await Summarizer.create(options);
         } else {
