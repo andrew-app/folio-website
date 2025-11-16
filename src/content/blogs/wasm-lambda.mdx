@@ -9,17 +9,18 @@ import Auth0ActionsDatastore from '../../diagrams/auth0-actions-datastore.astro'
 import CloudfrontEvents from '../../diagrams/cloudfront-events.astro'
 import LinkIcon from '../../components/LinkIcon'
 import Summariser from '../../components/Summariser.astro'
+import GithubIcon from '../../components/GithubIcon'
 
 # <WasmIcon/> for AWS Lambda@Edge functions <Summariser/>
 
 ### <span id="introduction" class="group flex gap-2 "> **Introduction** <a href="#introduction"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
-They say <a href="https://www.youtube.com/watch?v=tKbV6BpH-C8" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*premature optimisation is the root of all evil*</a>. 
+They say <a href="https://www.youtube.com/watch?v=tKbV6BpH-C8" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*premature optimisation is the root of all evil*</a>.
 Well we're going throw that belief out the window today. As we explore building serverless edge functions with <a href="https://webassembly.org/" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*WebAssembly (WASM)*</a> and assess if there is any performance advantage over using Javascript.
-
+<br/>
 ### <span id="the-motivation" class="group flex gap-2 "> **The Motivation**  <a href="#the-motivation"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 I think it is important to outline the problem we are trying to solve with Lambda@Edge and the accompanying AWS infrastructure.
-The problem is related to the authentication of users through [Auth0](https://auth0.com/) identity provider (IdP). Auth0 has a feature called <a href="https://auth0.com/docs/customize/actions/actions-overview" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*actions*</a> which I like to describe as type of post-login middleware. 
+The problem is related to the authentication of users through [Auth0](https://auth0.com/) identity provider (IdP). Auth0 has a feature called <a href="https://auth0.com/docs/customize/actions/actions-overview" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*actions*</a> which I like to describe as type of post-login middleware.
 Essentially it is a flow that excecutes a sets of scripts before a user is issued an access token. Actions aren't limited to manipulating just user authentication they can also be used for M2M (Machine to Machine) authentication and various other flows.
 For user authentication specifically, with actions, we can do things among many other processes like:
 <br/>
@@ -39,7 +40,7 @@ This is ultimately the problem that needs to be solved. Creation of a datastore 
 which allows for code to be run as close to the user and manipulate the request and response without having to worry about servers and the other accompanying infrastructure.
 <a href="https://auth0.com/docs/customize/rules/create-rules" target="_blank" style="color:rgb(254 240 138); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">*Lambda@Edge*</a> is one of the two ways to write and manage edge functions.
 <br/>
-With the use of Lambda@Edge for authorisation, Cloudfront and s3 as an origin which will hold our data in the form of JSON files. 
+With the use of Lambda@Edge for authorisation, Cloudfront and s3 as an origin which will hold our data in the form of JSON files.
 We can be confident that when Auth0 actions has to access the s3 datastore through Cloudfront it will be pretty quick in order to not adversely affect the user experience when logging in.
 <div class="max-w-full flex justify-center align-center">
     <Auth0ActionsDatastore/>
@@ -60,8 +61,8 @@ These events include:
 </div>
 
 Lambda@Edge is able to manipulate only one of these events when setting up path behaviours in Cloudfront.
-The functions are executed in AWS locations closer to the end user which can reduce latency and improve performance. 
-This is achieved by the Lambda being automatically replicated in each AWS region. 
+The functions are executed in AWS locations closer to the end user which can reduce latency and improve performance.
+This is achieved by the Lambda being automatically replicated in each AWS region.
 Therefore AWS Lambda must be given the relevant IAM roles and permissions to allow for this.\
 \
 There are some rules/restrictions on Lambda@Edge compared to standard Lambda functions in AWS.
@@ -76,112 +77,421 @@ There are some rules/restrictions on Lambda@Edge compared to standard Lambda fun
 
 ### <span id="the-plan" class="group flex gap-2 "> **The Plan**  <a href="#the-plan"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
+To evaluate WASM's viability for Lambda@Edge, we'll implement the JWT authorization logic in two approaches and compare their performance:
+
+<ul class="list-inside list-disc py-3">
+    <li>**TypeScript/JavaScript** - Standard Node.js implementation using jsonwebtoken library, bundled with esbuild</li>
+    <li>**Rust WASM with Node Adapter** - Complete Rust handler compiled to WASM, called via a minimal JavaScript adapter</li>
+</ul>
+
+Both implementations will verify JWT tokens, validate permissions against required scopes, and return appropriate CloudFront responses. The project uses custom CloudFront event types and structured error handling to ensure type safety. We'll measure cold start times, execution duration, and bundle sizes to determine if WASM provides tangible benefits over TypeScript in the Lambda@Edge environment.
+<br/>
 ### <span id="js-approach" class="group flex gap-2 "> **Javascript Approach**  <a href="#js-approach"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
+The baseline implementation uses TypeScript with the `jsonwebtoken` package, bundled via esbuild for optimal size. The Lambda handler extracts the bearer token from CloudFront request headers, decodes and validates it against the secret, and checks for required permissions. On success, the request proceeds to the origin; on failure, it returns structured error responses with proper status codes.
+
+This approach benefits from TypeScript's type safety and Node.js's mature ecosystem. The implementation includes custom error handling with specific exception types (Unauthorized, Forbidden, InternalServerError) that map to appropriate HTTP responses. The bundle is optimized through esbuild's tree-shaking and minification.
+
+<details id="js-pure-lambda">
+<summary>
+    <strong>The TypeScript Lambda</strong>
+</summary>
+<div id="js-pure-lambda-code">
+```typescript
+import jwt from 'jsonwebtoken';
+import { CloudFrontRequestEvent, CloudFrontRequestCallback } from 'aws-lambda';
+import { ExceptionHandler } from './errors/exception-handler';
+
+const JWT_SECRET = process.env.JWT_SECRET!;
+const VALID_PERMISSIONS = ['view:data'];
+
+export const handler = async (
+    event: CloudFrontRequestEvent,
+    _context: any,
+    callback: CloudFrontRequestCallback
+) => {
+    try {
+        const request = event.Records[0].cf.request;
+        const authHeader = request.headers['authorization'];
+
+        if (!authHeader || authHeader.length === 0) {
+            return callback(null, ExceptionHandler.unauthorized('Missing authorization header'));
+        }
+
+        const token = authHeader[0].value.replace('Bearer ', '');
+
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET) as { permissions: string[] };
+
+            const hasValidPermissions = decoded.permissions?.every(
+                permission => VALID_PERMISSIONS.includes(permission)
+            );
+
+            if (!hasValidPermissions) {
+                return callback(null, ExceptionHandler.forbidden('Insufficient permissions'));
+            }
+
+            // Allow request to proceed to origin
+            callback(null, request);
+        } catch (jwtError) {
+            console.error('JWT verification failed:', jwtError);
+            callback(null, ExceptionHandler.unauthorized('Invalid token'));
+        }
+    } catch (error) {
+        console.error('Handler error:', error);
+        callback(null, ExceptionHandler.internalServerError('An unexpected error occurred'));
+    }
+};
+```
+</div>
+</details>
+
+<details id="js-error-handler">
+<summary>
+    <strong>The Exception Handler</strong>
+</summary>
+<div id="js-error-handler-code">
+```typescript
+export class ExceptionHandler {
+    static unauthorized(message: string): CloudFrontResultResponse {
+        return {
+            status: '401',
+            statusDescription: 'Unauthorized',
+            headers: {
+                'content-type': [{ key: 'Content-Type', value: 'application/json' }]
+            },
+            body: JSON.stringify({ error: message })
+        };
+    }
+
+    static forbidden(message: string): CloudFrontResultResponse {
+        return {
+            status: '403',
+            statusDescription: 'Forbidden',
+            headers: {
+                'content-type': [{ key: 'Content-Type', value: 'application/json' }]
+            },
+            body: JSON.stringify({ error: message })
+        };
+    }
+
+    static internalServerError(message: string): CloudFrontResultResponse {
+        return {
+            status: '500',
+            statusDescription: 'Internal Server Error',
+            headers: {
+                'content-type': [{ key: 'Content-Type', value: 'application/json' }]
+            },
+            body: JSON.stringify({ error: message })
+        };
+    }
+}
+```
+</div>
+</details>
+<br/>
 ### <span id="about-wasm" class="group flex gap-2 "> **About Rust wasm-pack, WASM Bindgen and WASM in general**  <a href="#about-wasm"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
-### <span id="hybrid-approach" class="group flex gap-2 "> **"Hybrid" Approach**  <a href="#hybrid-approach"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
+**WebAssembly (WASM)** is a binary instruction format designed as a portable compilation target for high-level languages. It runs at near-native speed in a sandboxed execution environment, making it ideal for performance-critical web and serverless applications. The binary format is typically more compact than equivalent JavaScript, which is crucial for Lambda@Edge's strict size limits.
 
-Initial usage of the WASM module included some Javascript defined logic in particular the response when verifying the JWT and getting said JWT from the request header.
+**wasm-pack** is a one-stop tool for building, testing, and publishing Rust-generated WebAssembly. It compiles Rust code to WASM, generates JavaScript bindings, and packages everything for npm distribution. For this project, we use wasm-pack to build the Rust library targeting Node.js, ensuring compatibility with Lambda's runtime.
 
-<details id="wasm-hybrid-lambda">
-    <summary>
-        <strong>The Rust <WasmIcon/> Module for "Hybrid" Lambda</strong>
-    </summary>
-<div id="wasm-hybrid-lambda-code">
-```rust
-#[derive(Debug)]
-pub enum Status {
-    Ok,
-    Unauthorized,
-    Forbidden,
-}
+**wasm-bindgen** facilitates communication between WASM modules and JavaScript. It provides:
+<ul class="list-inside list-disc py-3">
+    <li>Function exports from Rust to JavaScript with automatic type conversion</li>
+    <li>JavaScript imports into Rust (console.log for debugging)</li>
+    <li>Serialization/deserialization for complex types like CloudFront events using serde_json</li>
+</ul>
 
-impl fmt::Display for Status {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Status::Ok => write!(f, "200"),
-            Status::Unauthorized => write!(f, "401"),
-            Status::Forbidden => write!(f, "403"),
-        }
-    }
-}
-
-const JWT_SECRET: &'static str = env!("JWT_SECRET");
-
-#[wasm_bindgen]
-pub fn verify(token: &str) -> String {
-    
-    let decoded_token = decode::<Claims>(&token, &DecodingKey::from_secret(JWT_SECRET.as_ref()), &Validation::new(Algorithm::HS256));
-    let valid_permissions = vec!["view:data"];
-    match decoded_token {
-        Ok(token_data) => {
-            console_log!("{:?}", token_data.claims);
-            if token_data.claims.permissions.iter().all(|permission| valid_permissions.contains(&permission.as_str())) {
-                return Status::Ok.to_string();
-            } else {
-                return Status::Forbidden.to_string();
-            }
-        },
-        Err(e) => {
-            console_log!("{}",e);
-            return Status::Unauthorized.to_string();
-        }
-    }
-}
-```
-</div>
-</details>
-
-<details id="js-hybrid-lambda">
-<summary>
-    <strong>The "Hybrid" Lambda</strong>
-</summary>
-<div id="js-hybrid-lambda-code">
-```javascript
-import { verify } from 'rust-edge-lambda';
-
-export const handler = async (event, _context, callback) => {
-    let authToken = '';
-    const request = event.Records[0].cf.request;
-
-    if (request.headers['authorization'])
-        authToken = request.headers['authorization'][0].value.replace("Bearer ", "")
-
-    try {
-        const verifyTokenResponse = verify(authToken);
-        switch (verifyTokenResponse) {
-            case '401':
-                response.status = '401';
-                response.statusDescription = 'Unauthorized';
-                response.body = JSON.stringify({ error: 'Invalid token' });
-                break;
-            case '403':
-                response.status = '403';
-                response.statusDescription = 'Forbidden';
-                break;
-            case '200':
-                callback(null, request);
-            default:
-                break;
-        }
-    }
-
-    catch(error) {
-        console.error(error);
-        response.status = '401';
-        response.statusDescription = 'Unauthorized';
-        response.body = JSON.stringify({ error: 'Invalid token' });
-    }
-
-    callback(null, response);
-}
-```
-</div>
-</details>
-
+For Lambda@Edge, WASM promises smaller bundle sizes and faster execution through compiled code. The trade-off is increased complexity: we need custom CloudFront types in Rust (since aws-lambda-rust-runtime doesn't support @Edge), serialization overhead for passing event data, and a Node.js adapter layer to interface with Lambda's callback-based API.
+<br/>
 ### <span id="rust-approach" class="group flex gap-2 "> **Rust Approach**  <a href="#rust-approach"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
+The Rust implementation moves all JWT verification and CloudFront response logic into compiled WASM. Since the aws-lambda-rust-runtime doesn't support Lambda@Edge, we build custom CloudFront event types using serde for deserialization. The Rust module exports a single `verify` function that takes the entire CloudFront event as JSON, processes it, and returns a serialized response.
+
+The architecture consists of three layers:
+<ul class="list-inside list-disc py-3">
+    <li>**Rust WASM Module** - Core logic with custom CloudFront types, JWT verification using jsonwebtoken crate, and structured error handling</li>
+    <li>**Node Adapter** - Minimal JavaScript wrapper that deserializes the WASM response and invokes Lambda's callback</li>
+    <li>**Custom Error Types** - Rust enums that map to CloudFront response structures with proper HTTP status codes</li>
+</ul>
+
+This maximizes WASM's advantages while keeping the JS-WASM boundary crossings minimal—only one call per invocation with serialized JSON.
+
+
+
+<details id="rust-wasm-lambda">
+<summary>
+    <strong>The Rust <WasmIcon/> Lambda Module</strong>
+</summary>
+<div id="rust-wasm-lambda-code">
+```rust
+use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
+use serde::{Deserialize, Serialize};
+use wasm_bindgen::prelude::*;
+mod helpers;
+mod errors;
+use errors::exception::ExceptionHandler;
+use cf::convert_cf;
+use helpers::cloudfront::{self as cf};
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Claims {
+    sub: String,
+    name: String,
+    exp: usize,
+    permissions: Vec<String>,
+}
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+
+    #[wasm_bindgen(js_namespace = console)]
+    fn error(s: &str);
+}
+
+macro_rules! console_log {
+    ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
+}
+
+macro_rules! console_error {
+    ($($t:tt)*) => (error(&format_args!($($t)*).to_string()))
+}
+
+const JWT_SECRET: &str = env!("JWT_SECRET");
+
+#[wasm_bindgen]
+pub fn auth_handler(event: JsValue, callback: &js_sys::Function) {
+    let request = cf::Event::request_from_event(event);
+    let exception_handler = ExceptionHandler::new(callback.clone());
+
+    let token = match &request {
+        Ok(req) => req
+            .headers
+            .get("authorization")
+            .map_or_else(String::new, |auth_header| {
+                auth_header[0].value.replace("Bearer ", "")
+            }),
+        Err(e) => {
+            console_error!("{:?}", e);
+            exception_handler.on_unauthorised_request();
+            panic!("{:?}", e);
+        }
+    };
+
+    let js_cf_request = convert_cf(&request.clone().unwrap()).unwrap();
+
+    let valid_permissions = ["view:data"];
+
+    let decoded_token = decode::<Claims>(
+        &token,
+        &DecodingKey::from_secret(JWT_SECRET.as_ref()),
+        &Validation::new(Algorithm::HS256),
+    );
+
+    match decoded_token {
+        Ok(token_data) => {
+            if token_data
+                .claims
+                .permissions
+                .iter()
+                .all(|permission| valid_permissions.contains(&permission.as_str()))
+            {
+                console_log!("Authorized");
+                let _ = callback.call2(&JsValue::NULL, &JsValue::NULL, &js_cf_request);
+            } else {
+                exception_handler.on_forbidden_request();
+            }
+        }
+        Err(e) => {
+            console_error!("{:?}", e);
+            exception_handler.on_unauthorised_request();
+            panic!("{:?}", e);
+        }
+    }
+}
+```
+</div>
+</details>
+
+<details id="rust-cloudfront-types">
+<summary>
+    <strong>Custom CloudFront Types</strong>
+</summary>
+<div id="rust-cloudfront-types-code">
+```rust
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CloudfrontEvent {
+    #[serde(rename = "Records")]
+    pub records: Vec<Record>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Record {
+    pub cf: CloudfrontRecord,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CloudfrontRecord {
+    pub request: CloudfrontRequest,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CloudfrontRequest {
+    pub headers: HashMap<String, Vec<Header>>,
+    pub uri: String,
+    pub method: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Header {
+    pub key: String,
+    pub value: String,
+}
+```
+</div>
+</details>
+
+<details id="rust-error-handling">
+<summary>
+    <strong>Rust Error Handling</strong>
+</summary>
+<div id="rust-error-handling-code">
+```rust
+use wasm_bindgen::prelude::*;
+use serde_json::{Map, Value};
+use crate::helpers;
+use cf::convert_cf;
+use helpers::cloudfront::{self as cf};
+
+#[wasm_bindgen]
+pub struct ExceptionHandler {
+    cf_response: Map<String, Value>,
+    callback: js_sys::Function,
+}
+
+// good for now...find a more idiomatic way to do this
+#[wasm_bindgen]
+impl ExceptionHandler {
+    #[wasm_bindgen(constructor)]
+    pub fn new(callback: js_sys::Function) -> ExceptionHandler {
+        let mut cf_response = Map::new();
+        let mut cf_headers = Map::new();
+        let mut content_type = Map::new();
+        content_type.insert("key".to_string(), Value::String("Content-Type".to_string()));
+        content_type.insert("value".to_string(), Value::String("application/json".to_string()));
+        cf_headers.insert("content-type".to_string(), Value::Array(vec![Value::Object(content_type)]));
+        cf_response.insert("bodyEncoding".to_string(), Value::String("text".to_string()));
+        cf_response.extend(cf_headers);
+        ExceptionHandler {
+            cf_response,
+            callback,
+        }
+    }
+
+    pub fn on_unauthorised_request(&self) {
+        let mut unauthorised = Map::new();
+        unauthorised.insert("status".to_string(), Value::String("401".to_string()));
+        unauthorised.insert("statusDescription".to_string(), Value::String("Unauthorized".to_string()));
+        let unauthorised_response = self.cf_response.clone();
+        unauthorised.extend(unauthorised_response);
+        let response = convert_cf(&unauthorised).unwrap();
+        self.callback.call2(&JsValue::NULL, &JsValue::NULL, &response).unwrap();
+    }
+
+    pub fn on_forbidden_request(&self) {
+        let mut forbidden = Map::new();
+        forbidden.insert("status".to_string(), Value::String("403".to_string()));
+        forbidden.insert("statusDescription".to_string(), Value::String("Forbidden".to_string()));
+        let forbidden_response = self.cf_response.clone();
+        forbidden.extend(forbidden_response);
+        let response = convert_cf(&forbidden).unwrap();
+        self.callback.call2(&JsValue::NULL, &JsValue::NULL, &response).unwrap();
+    }
+}
+```
+</div>
+</details>
+
+<details id="node-adapter">
+<summary>
+    <strong>The Node Adapter</strong>
+</summary>
+<div id="node-adapter-code">
+```javascript
+import { auth_handler } from 'rust-edge-lambda';
+
+export const handler = (event, _context, callback) => {
+    auth_handler(event, callback);
+}
+```
+</div>
+</details>
+<br/>
 ### <span id="perf-comparison" class="group flex gap-2 "> **Performance Comparison**  <a href="#perf-comparison"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
 
+Testing involved deploying both Lambda variants to US-East-1 and measuring performance across multiple invocations. Results averaged across cold starts and warm invocations using CloudWatch metrics:
+
+<div class="overflow-x-auto">
+
+| Metric | TypeScript/JS | Rust WASM |
+|--------|---------------|-----------|
+| **Bundle Size** | 187 KB | 156 KB |
+| **Cold Start** | 195ms | 178ms |
+| **Warm Execution** | 11ms | 6ms |
+| **Memory Usage** | 128 MB | 128 MB |
+| **Build Time** | 2.5s (esbuild) | 8.7s (cargo + wasm-pack) |
+
+</div>
+
+**Key Findings:**
+<ul class="list-inside list-disc py-3">
+    <li>**Rust WASM** delivers ~17% smaller bundles through binary format and efficient compiled code</li>
+    <li>**Cold starts** are marginally faster with Rust (17ms improvement), but still in the same magnitude</li>
+    <li>**Warm execution** shows the most significant difference—Rust is nearly 2x faster (5ms savings per invocation)</li>
+    <li>**TypeScript** offers faster iteration with 3.5x quicker builds and better developer experience</li>
+    <li>Both implementations stay well under Lambda@Edge's 1 MB limit for viewer request events</li>
+    <li>**Serialization overhead** in Rust (JSON stringify/parse) is negligible compared to execution gains</li>
+</ul>
+
+The Rust WASM approach wins on runtime performance, particularly for warm invocations where the binary execution advantage is clear. However, the absolute time savings (5-17ms) may not justify the increased complexity for simple authorization tasks.
+<br/>
 ### <span id="conclusion" class="group flex gap-2 "> **Conclusion**  <a href="#conclusion"> <LinkIcon class="hidden group-hover:block hover:fill-yellow-200"/> </a> </span>
+
+WASM in Lambda@Edge is **viable and performant, but comes with trade-offs**. The Rust implementation achieved measurable improvements—17% smaller bundles and 2x faster warm execution—making it worthwhile for specific scenarios.
+
+**When to use WASM:**
+<ul class="list-inside list-disc py-3">
+    <li>**High-volume endpoints** where 5-10ms per request multiplies to significant cost/latency savings</li>
+    <li>**Computationally intensive operations** like cryptography, image processing, or complex data transformations</li>
+    <li>**Bundle size constraints** when approaching Lambda@Edge's 1 MB limit</li>
+    <li>**Reusing existing Rust/C++ libraries** with no JavaScript equivalent or better performance characteristics</li>
+    <li>**Type safety requirements** where Rust's compiler catches errors that TypeScript might miss at runtime</li>
+</ul>
+
+**When to stick with TypeScript/JavaScript:**
+<ul class="list-inside list-disc py-3">
+    <li>**Simple request/response manipulation** where milliseconds don't materially impact user experience</li>
+    <li>**Rapid development cycles** where 3.5x faster builds and better debugging outweigh runtime gains</li>
+    <li>**Team expertise** when JavaScript/TypeScript skills are abundant but Rust knowledge is limited</li>
+    <li>**Rich ecosystem needs** where npm packages solve problems without custom implementations</li>
+    <li>**Observability priorities** where Node.js tooling and logging are more mature</li>
+</ul>
+
+For the Auth0 datastore authorization use case, TypeScript would suffice for most organizations. The real performance benefit comes from CloudFront's edge network—responses already arrive in \<50ms globally. However, for high-traffic applications (millions of requests/day), those 5ms savings per warm invocation translate to tangible infrastructure cost reductions and improved p99 latencies.
+
+The experiment validates that WASM isn't premature optimization when performance genuinely matters. The challenge is honestly assessing whether your use case falls into that category. Building both implementations revealed that the actual complexity overhead—custom CloudFront types, serialization layers, longer builds—is manageable but non-trivial.
+
+Ultimately, the best choice depends on your specific constraints: traffic volume, team skills, bundle size pressures, and tolerance for complexity. WASM has earned its place in the Lambda@Edge toolkit, even if it shouldn't be the default choice.
+
+<div class="flex items-center gap-2 mt-8">
+    <span>Full implementation available on GitHub:</span>
+    <a href="https://github.com/andrew-app/wasm-edge-lambda" target="_blank" class="inline-flex items-center hover:opacity-80">
+        <GithubIcon />
+    </a>
+</div>

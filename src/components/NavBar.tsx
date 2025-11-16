@@ -11,7 +11,7 @@ const NavBar: Component = () => {
         ["BLOGS", "/blogs"],
       ].map(([title, url]) => (
         <a
-          class="rounded-lg px-3 py-3 text-white group text-6xl font-medium font-futura overflow-hidden animate-fade-in-text hover:text-yellow-200 text-shadow-[0_66px_0_white]"
+          class="rounded-lg px-3 py-3 text-white group text-6xl font-medium font-futura overflow-hidden animate-fade-in-text hover:text-yellow-200 text-shadow-[0_66px_0_rgb(255,240,133)]"
           href={url}
         >
           <LetterSegment title={title} />

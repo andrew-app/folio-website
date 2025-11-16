@@ -8,6 +8,10 @@
     font-family: "Gotham";
     src: url("../assets/fonts/Gotham.ttf");
 }
+@font-face {
+    font-family: "Virgil";
+    src: url("../assets/fonts/Virgil.woff2") format("woff2");
+}
 /* Custom Font Families */
 @theme {
     --font-futura: Futura;

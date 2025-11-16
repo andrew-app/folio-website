@@ -1,4 +1,6 @@
 ---
+import "../../styles/global.css";
+import "../../styles/blogs.css";
 import Prose from "../../components/Prose.astro";
 import { getEntry } from "astro:content";
 import { getCollection } from "astro:content";
@@ -21,6 +23,7 @@ export async function getStaticPaths() {
     <meta charset="UTF-8" />
 </head>
 <ArrowIcon route="/blogs" />
+<style></style>
 <Prose>
     <Content />
 </Prose>
