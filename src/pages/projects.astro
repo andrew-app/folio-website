@@ -1,89 +1,127 @@
 ---
-import ArrowIcon from '../components/ArrowIcon';
-import GithubIcon from '../components/GithubIcon';
-import LinkIcon from '../components/LinkIcon';
-import Admin from '../assets/admin.svg';
-import LoversLeap from '../assets/lovers-leap.svg';
+import "../styles/global.css";
+import ArrowIcon from "../components/ArrowIcon";
+import GithubIcon from "../components/GithubIcon";
+import LinkIcon from "../components/LinkIcon";
+import Admin from "../assets/admin.svg";
+import LoversLeap from "../assets/lovers-leap.svg";
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Projects</title>
-	</head>
-	<style>
-		@font-face {
-		font-family: "Futura";
-		src: url('../assets/fonts/Futura.ttf');
-		}
-		@font-face {
-		font-family: "Gotham";
-		src: url('../assets/fonts/Gotham.ttf');
-		}
-	</style>
-	<body class="bg-black">
-		<ArrowIcon/>
-		<h1 class="rounded-lg px-3 py-3 text-white text-6xl font-gotham animate-fade-in-text flex justify-center space-x-4 tracking-wider">
-		PROJECTS
-		</h1>
-		<div class="rounded-lg px-3 py-3 text-white text-2xl font-medium font-futura flex-col">
-		<h2 class="animate-fade-in-text text-center">What I have worked on in past and present.</h2>
-		<div class="flex justify-center">
-		<div class="text-white my-[25px] flex flex-col gap-12">
-			<div class="flex items-center gap-3 border-slate-50 border-2 rounded-md py-5 px-5">
-				<img src={Admin.src} alt="admin logo" class="h-40 w-28 md:h-42 lg:h-42 md:w-48 lg:w-52"/>
-				<div>
-					<h3 class="font-bold">Realtime Admin Dashboard</h3>
-					<p class="text-sm">An admin dashboard that simulates user creation and updation events.</p>
-					<p class="text-sm text-left py-1">Built with:</p>
-					<div class="flex flex-row justify-between items-end">
-					<ul class="text-sm text-left list-inside list-disc">
-						<li>React Typescript</li>
-						<li>Kotlin Spring Web MVC & Webflux</li>
-						<li>Postgres</li>
-						<li>Kafka</li>
-						<li>Debezium</li>
-					</ul>
-					</div>
-				</div>
-				<span class="mx-3"></span>
-				<span class="flex items-end gap-5">
-					<a href={"https://github.com/andrew-app/rt-admin-dashboard"} target="_blank">
-						<GithubIcon/>
-					</a>
-					<a href={"/projects/admin-dashboard"} target="_blank">
-						<LinkIcon class="fill-white hover:fill-yellow-200"/>
-					</a>
-				</span>
-			</div>
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+        <title>Projects</title>
+    </head>
+    <body class="bg-black">
+        <ArrowIcon />
+        <h1
+            class="rounded-lg px-3 py-3 text-white text-6xl font-gotham animate-fade-in-text flex justify-center space-x-4 tracking-wider"
+        >
+            PROJECTS
+        </h1>
+        <div
+            class="rounded-lg px-3 py-3 text-white text-2xl font-medium font-futura flex-col"
+        >
+            <h2 class="animate-fade-in-text text-center">
+                What I have worked on in past and present.
+            </h2>
+            <div class="flex justify-center">
+                <div class="text-white my-[25px] flex flex-col gap-12">
+                    <div
+                        class="flex items-center gap-3 border-slate-50 border-2 rounded-md py-5 px-5"
+                    >
+                        <img
+                            src={Admin.src}
+                            alt="admin logo"
+                            class="h-40 w-28 md:h-42 lg:h-42 md:w-48 lg:w-52"
+                        />
+                        <div>
+                            <h3 class="font-bold">Realtime Admin Dashboard</h3>
+                            <p class="text-sm">
+                                An admin dashboard that simulates user creation
+                                and updation events.
+                            </p>
+                            <p class="text-sm text-left py-1">Built with:</p>
+                            <div
+                                class="flex flex-row justify-between items-end"
+                            >
+                                <ul
+                                    class="text-sm text-left list-inside list-disc"
+                                >
+                                    <li>React Typescript</li>
+                                    <li>Kotlin Spring Web MVC & Webflux</li>
+                                    <li>Postgres</li>
+                                    <li>Kafka</li>
+                                    <li>Debezium</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <span class="mx-3"></span>
+                        <span class="flex items-end gap-5">
+                            <a
+                                href={"https://github.com/andrew-app/rt-admin-dashboard"}
+                                target="_blank"
+                            >
+                                <GithubIcon />
+                            </a>
+                            <a
+                                href={"/projects/admin-dashboard"}
+                                target="_blank"
+                            >
+                                <LinkIcon
+                                    class="fill-white hover:fill-yellow-200"
+                                />
+                            </a>
+                        </span>
+                    </div>
 
-			<div class="flex items-center gap-3 border-slate-50 border-2 rounded-md py-7 px-5">
-				<img src={LoversLeap.src} alt="lovers leap logo" class="h-44 w-28 md:h-42 lg:h-42 md:w-48 lg:w-52"/>
-				<div>
-					<h3 class="font-bold">Lover's Leap Booking Portal</h3>
-					<p class="text-sm">Booking platform for holiday home in Nuwara Eliya, Sri-Lanka. (In-Progress)</p>
-					<p class="text-sm text-left py-1">Built with:</p>
-					<div class="flex flex-row justify-between items-end">
-					<ul class="text-sm text-left list-inside list-disc">
-						<li>Next.js Typescript</li>
-						<li>Supabase</li>
-						<li>Prisma ORM</li>
-						<li>Stripe Payments</li>
-						<li>Vercel</li>
-					</ul>
-					</div>
-				</div>
-				<span class="flex items-end ml-11">
-					<a href={"https://lovers-leap.andrew-app.dev/"} target="_blank">
-						<LinkIcon class="fill-white hover:fill-yellow-200"/>
-					</a>
-				</span>
-			</div>
-		</div>
-			
-		</div>
-	</body>
+                    <div
+                        class="flex items-center gap-3 border-slate-50 border-2 rounded-md py-7 px-5"
+                    >
+                        <img
+                            src={LoversLeap.src}
+                            alt="lovers leap logo"
+                            class="h-44 w-28 md:h-42 lg:h-42 md:w-48 lg:w-52"
+                        />
+                        <div>
+                            <h3 class="font-bold">
+                                Lover's Leap Booking Portal
+                            </h3>
+                            <p class="text-sm">
+                                Booking platform for holiday home in Nuwara
+                                Eliya, Sri-Lanka. (In-Progress)
+                            </p>
+                            <p class="text-sm text-left py-1">Built with:</p>
+                            <div
+                                class="flex flex-row justify-between items-end"
+                            >
+                                <ul
+                                    class="text-sm text-left list-inside list-disc"
+                                >
+                                    <li>Next.js Typescript</li>
+                                    <li>Supabase</li>
+                                    <li>Prisma ORM</li>
+                                    <li>Stripe Payments</li>
+                                    <li>Vercel</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <span class="flex items-end ml-11">
+                            <a
+                                href={"https://lovers-leap.andrew-app.dev/"}
+                                target="_blank"
+                            >
+                                <LinkIcon
+                                    class="fill-white hover:fill-yellow-200"
+                                />
+                            </a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

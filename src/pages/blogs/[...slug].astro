@@ -1,25 +1,26 @@
 ---
-import Prose from '../../components/Prose.astro';
-import { getEntry } from 'astro:content';
-import { getCollection } from 'astro:content';
-import ArrowIcon from '../../components/ArrowIcon';
+import Prose from "../../components/Prose.astro";
+import { getEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import ArrowIcon from "../../components/ArrowIcon";
 
-
-const entry = await getEntry('blogs', 'wasm-lambda');
-const { Content } = await entry.render();
+const entry = await getEntry("blogs", "wasm-lambda");
+const { Content } = await entry!!.render();
 
 export async function getStaticPaths() {
-    const blogs = await getCollection('blogs');
-    return blogs.map(entry => ({
-    params: { slug: entry.slug }, props: { entry },
-  }));
+    const blogs = await getCollection("blogs");
+    return blogs.map((entry) => ({
+        params: { slug: entry.slug },
+        props: { entry },
+    }));
 }
 ---
+
 <head>
-  <title>Blog - {entry.data.title}</title>
-  <meta charset="UTF-8" />
+    <title>Blog - {entry!!.data.title}</title>
+    <meta charset="UTF-8" />
 </head>
-<ArrowIcon route="/blogs"/>
+<ArrowIcon route="/blogs" />
 <Prose>
-    <Content/>
+    <Content />
 </Prose>

@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: "Futura";
+    src: url("../assets/fonts/Futura.ttf");
+}
+@font-face {
+    font-family: "Gotham";
+    src: url("../assets/fonts/Gotham.ttf");
+}
+/* Custom Font Families */
+@theme {
+    --font-futura: Futura;
+    --font-gotham: Gotham;
+    --font-virgil: Virgil;
+
+    /* Custom Animations */
+    --animate-scale: scale 3s forwards cubic-bezier(0.5, 1, 0.89, 1);
+    --animate-staggered: fade-in 0.8s forwards cubic-bezier(0.11, 0, 0.5, 0);
+    --animate-fade-in-text: fade 2s linear;
+    --animate-rolling-text: up 0.5s forwards;
+}
+
+/* Custom Keyframes */
+@keyframes fade {
+    0% {
+        color: rgba(255, 255, 255, 0);
+    }
+    50% {
+        color: rgba(255, 255, 255, 0.5);
+    }
+    100% {
+        color: rgba(255, 255, 255, 1);
+    }
+}
+
+@keyframes scale {
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes fade-in {
+    100% {
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+@keyframes up {
+    100% {
+        translate: 0 -110%;
+    }
+}
+
+/* Custom Utilities */
+@utility staggered-text {
+    transform: scale(0.94);
+    animation: scale 3s forwards cubic-bezier(0.5, 1, 0.89, 1);
+}
+
+@utility rolling-text {
+    animation: up 0.4s forwards;
+    animation-delay: calc(sibling-index() * 0.05s);
+}
+
+.staggered-text > * {
+    display: inline-block;
+    opacity: 0;
+    filter: blur(4px);
+    animation: fade-in 0.8s forwards cubic-bezier(0.11, 0, 0.5, 0);
+}
+
+/* Staggered animation delays for children */
+.staggered-text > *:nth-child(1) {
+    animation-delay: 0.5s;
+}
+
+.staggered-text > *:nth-child(2) {
+    animation-delay: 1s;
+}
+
+.staggered-text > *:nth-child(3) {
+    animation-delay: 1.5s;
+}
+
+.staggered-text > *:nth-child(4) {
+    animation-delay: 2s;
+}
+
+.staggered-text > *:nth-child(5) {
+    animation-delay: 2.5s;
+}
+
+.staggered-text > *:nth-child(6) {
+    animation-delay: 3s;
+}
+
+.staggered-text > *:nth-child(7) {
+    animation-delay: 3.5s;
+}
+
+.staggered-text > *:nth-child(8) {
+    animation-delay: 4s;
+}
+
+.staggered-text > *:nth-child(9) {
+    animation-delay: 4.5s;
+}

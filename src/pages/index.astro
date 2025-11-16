@@ -1,38 +1,27 @@
 ---
-import NavBar from '../components/NavBar';
+import NavBar from "../components/NavBar";
+import "../styles/global.css";
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Andrew-App</title>
-	</head>
-	<style>
-		@font-face {
-		font-family: "Futura";
-		src: url('../assets/fonts/Futura.ttf');
-		}
-		@font-face {
-		font-family: "Gotham";
-		src: url('../assets/fonts/Gotham.ttf');
-		}
-	</style>
-	<body class="bg-black">
-		<div class="grid place-items-center h-screen">
-		<div class="m-auto">
-		<h2 class="text-white font-gotham text-center text-6xl py-10 staggered-text">
-			<span>
-				ANDREW
-			</span>
-			<span>
-				APPUHAMY
-			</span> 
-		</h2>
-		<NavBar/>
-		</div>
-		</div>
-	</body>
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+        <title>Andrew-App</title>
+    </head>
+    <body class="bg-black">
+        <div class="grid place-items-center h-screen">
+            <div class="m-auto">
+                <h2
+                    class="text-white font-gotham text-center text-6xl py-10 staggered-text"
+                >
+                    <span> ANDREW </span>
+                    <span> APPUHAMY </span>
+                </h2>
+                <NavBar />
+            </div>
+        </div>
+    </body>
 </html>
