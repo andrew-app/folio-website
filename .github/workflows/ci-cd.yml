@@ -9,6 +9,7 @@ jobs:
   build_admin_project:
     runs-on: ubuntu-latest
     name: Build admin dashboard UI project
+    if: github.ref == 'refs/head/main'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,6 +36,7 @@ jobs:
     name: Build portfolio website and deploy
     runs-on: ubuntu-latest
     needs: build_admin_project
+    if: github.ref == 'refs/head/main'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
